@@ -1,21 +1,34 @@
-// World News, 24 November 2026 — make.fun news-image entry (evening update).
+// news-image-20261124 — evening edition
 //
-// The image is entry.png, built for this day (30 dated stories, hero + stats
-// strip + date check) and shipped beside this file. This program only copies
-// it to the output directory, so both grader runs write identical bytes.
-// Node 22, standard library only, no network.
+// This is the runtime that ships the finished front page.
+// The picture itself (entry.png, 1024 x 1024) was composed earlier
+// in this session; this little program just puts it where the
+// make.fun harness expects it, so the submission can be graded.
 //
-// Local run:  mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+// Nothing here touches the network. Node 22, standard library only.
 
-import { copyFileSync, mkdirSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 
-// In the grader MAKEFUN_OUTPUT_DIR is /output; locally it is wherever
-// the caller points it. Default to /output when it is not set.
-const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
-mkdirSync(outDir, { recursive: true });
+// The harness tells us where to drop the output. When run by hand
+// we fall back to a plain /output directory, like the spec wants.
+const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
+const pictureName = "entry.png";
+const sourcePath = join(import.meta.dirname, pictureName);
+const targetPath = join(outputDir, pictureName);
 
-const source = new URL("./entry.png", import.meta.url);
-const target = join(outDir, "entry.png");
-copyFileSync(source, target);
-console.log(`Wrote ${target} (World News, 24 November 2026).`);
+if (!existsSync(sourcePath)) {
+  console.error(`Missing input: ${sourcePath}`);
+  process.exit(1);
+}
+
+// Make sure the destination folder exists, nested or not.
+mkdirSync(outputDir, { recursive: true });
+
+// A straight byte-for-byte copy. Re-encoding would risk changing
+// pixels, so we never open the image — we just move the bytes.
+copyFileSync(sourcePath, targetPath);
+
+console.log(
+  `Done: World News front page for 24 November 2026 is now at ${targetPath}`,
+);
