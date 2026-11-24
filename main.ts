@@ -1,4 +1,4 @@
-// World News, 24 November 2026 — make.fun news-image entry.
+// World News, 24 November 2026 — make.fun news-image entry (evening update).
 //
 // The image is entry.png, built for this day (30 dated stories, hero + stats
 // strip + date check) and shipped beside this file. This program only copies
